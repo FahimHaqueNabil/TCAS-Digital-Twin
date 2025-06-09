@@ -9,18 +9,30 @@ for i = 1:length(t)
     position_B(1) = position_B(1) - velocity_B * dt;
 
     % Compute horizontal distance
-    horizDist = abs(position_A(1) - position_B(1));
+    horizDist = abs(position_A(1) - position_B(1));    
+
+     % Compute relative velocity
+    rel_vel = velocity_B + velocity_A;
+     % Compute CPA
+    tcpa = dot(horizDist, rel_vel) / norm(rel_vel)^2;     
+   
+    fprintf("Disctance between Aircraft A and Aircraft B : %.0f m\n", horizDist);
 
     % TA detection
-    if horizDist < TA_threshold && ~TA_region && ~RA_region
+    if horizDist < TA_threshold && ~TA_region && ~RA_region && tcpa > 0 && tcpa < tCPA_TA
+             
         TA_region = true;
         disp(['[TA] Traffic Advisory at t = ' num2str(t(i)) ' sec']);
+         fprintf("Aircraft A position %.0f and Aircraft B position: %.0f\n", position_A(1), position_B(1));
+         fprintf("TA: Disctance between Aircraft A and Aircraft B : %.0f m\n", horizDist); 
     end
 
     % RA detection
-    if horizDist < RA_threshold && ~RA_region
-        RA_region = true;
+    if horizDist < RA_threshold && ~RA_region  && tcpa < tCPA_RA
+        RA_region = true;       
         disp(['[RA] Resolution Advisory at t = ' num2str(t(i)) ' sec']);
+        fprintf("Aircraft A position %.0f and Aircraft B position: %.0f\n", position_A(1), position_B(1));
+         fprintf("RA: Disctance between Aircraft A and Aircraft B : %.0f m\n", horizDist);
     end
 
     % RA maneuver
@@ -50,7 +62,8 @@ for i = 1:length(t)
     set(trail2, 'XData', trajectory2(:,1), 'YData', trajectory2(:,2), 'ZData', trajectory2(:,3));
 
     drawnow;
-    pause(0.1);
+    pause(0.05);
+    hold on
 end
 
 % Helper function: move to target altitude
