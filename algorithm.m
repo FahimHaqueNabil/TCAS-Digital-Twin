@@ -9,30 +9,26 @@ for i = 1:length(t)
     position_B(1) = position_B(1) - velocity_B * dt;
 
     % Compute horizontal distance
-    horizDist = abs(position_A(1) - position_B(1));    
+    horizDist = abs(position_A(1) - position_B(1));
 
-     % Compute relative velocity
+    % Compute relative velocity and tcpa
     rel_vel = velocity_B + velocity_A;
-     % Compute CPA
-    tcpa = dot(horizDist, rel_vel) / norm(rel_vel)^2;     
-   
-    fprintf("Disctance between Aircraft A and Aircraft B : %.0f m\n", horizDist);
+    tcpa = horizDist / rel_vel;
+
+    fprintf("Distance between Aircraft A and B: %.0f m\n", horizDist);
 
     % TA detection
     if horizDist < TA_threshold && ~TA_region && ~RA_region && tcpa > 0 && tcpa < tCPA_TA
-             
         TA_region = true;
-        disp(['[TA] Traffic Advisory at t = ' num2str(t(i)) ' sec']);
-         fprintf("Aircraft A position %.0f and Aircraft B position: %.0f\n", position_A(1), position_B(1));
-         fprintf("TA: Disctance between Aircraft A and Aircraft B : %.0f m\n", horizDist); 
+        advisoryMessage = ['[TA] Traffic Advisory at t = ' num2str(t(i)) ' sec'];
+        disp(advisoryMessage);
     end
 
     % RA detection
-    if horizDist < RA_threshold && ~RA_region  && tcpa < tCPA_RA
-        RA_region = true;       
-        disp(['[RA] Resolution Advisory at t = ' num2str(t(i)) ' sec']);
-        fprintf("Aircraft A position %.0f and Aircraft B position: %.0f\n", position_A(1), position_B(1));
-         fprintf("RA: Disctance between Aircraft A and Aircraft B : %.0f m\n", horizDist);
+    if horizDist < RA_threshold && ~RA_region && tcpa < tCPA_RA
+        RA_region = true;
+        advisoryMessage = ['[RA] Resolution Advisory at t = ' num2str(t(i)) ' sec'];
+        disp(advisoryMessage);
     end
 
     % RA maneuver
@@ -43,13 +39,32 @@ for i = 1:length(t)
             if abs(position_A(3) - 10000) < 5 && abs(position_B(3) - 10000) < 5
                 RA_region = false;
                 TA_region = false;
-                disp(['[RESOLVED] Conflict resolved at t = ' num2str(t(i)) ' sec']);
+                advisoryMessage = ['[RESOLVED] Conflict resolved at t = ' num2str(t(i)) ' sec'];
+                disp(advisoryMessage);
             end
         else
             position_A(3) = position_A(3) + climbRate_RA * dt;
             position_B(3) = position_B(3) - climbRate_RA * dt;
         end
     end
+
+    % Track climb/descent
+    verticalChange_A = position_A(3) - initialAltitude_A;   % Climb
+    verticalChange_B = initialAltitude_B - position_B(3);   % Descent
+
+    % Update label
+    labelText = sprintf([ ...
+        'Aircraft A (Blue) Speed: %d m/s\n' ...
+        'Aircraft B (Red) Speed: %d m/s\n' ...
+        'Horizontal Distance between Aircraft A and B: %.0f m\n' ...
+        'Vertical Distance between Aircraft A and B: %.0f m\n' ...
+        'Aircraft A Climb: %.1f m\n' ...
+        'Aircraft B Descent: %.1f m\n' ...
+        '%s'], ...
+        velocity_A, velocity_B, horizDist, ...
+        (verticalChange_A+verticalChange_B), verticalChange_A, verticalChange_B, advisoryMessage);
+
+    set(labelHandle, 'String', labelText);
 
     % Store trajectory
     trajectory1(end+1, :) = position_A;
@@ -63,10 +78,9 @@ for i = 1:length(t)
 
     drawnow;
     pause(0.05);
-    hold on
 end
 
-% Helper function: move to target altitude
+% Helper function
 function newAlt = moveToAltitude(current, target, rate, dt)
     if abs(current - target) < rate * dt
         newAlt = target;
