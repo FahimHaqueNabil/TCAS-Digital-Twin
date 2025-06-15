@@ -2,6 +2,14 @@
 trajectory1 = [];
 trajectory2 = [];
 
+% Create on-screen text box once (top-left corner)
+infoBoxHandle = annotation('textbox', [0.02, 0.75, 0.3, 0.2], ...
+    'String', '', ...
+    'FontSize', 11, ...
+    'BackgroundColor', 'white', ...
+    'EdgeColor', 'black', ...
+    'FitBoxToText', 'on');
+
 % Main loop
 for i = 1:length(t)
     % Update positions
@@ -14,13 +22,13 @@ for i = 1:length(t)
     % TA detection
     if horizDist < TA_threshold && ~TA_region && ~RA_region
         TA_region = true;
-        disp(['[TA] Traffic Advisory at t = ' num2str(t(i)) ' sec']);
+        advisoryMessage = ['[TA] Traffic Advisory at t = ' num2str(t(i)) ' sec'];
     end
 
     % RA detection
     if horizDist < RA_threshold && ~RA_region
         RA_region = true;
-        disp(['[RA] Resolution Advisory at t = ' num2str(t(i)) ' sec']);
+        advisoryMessage = ['[RA] Resolution Advisory at t = ' num2str(t(i)) ' sec'];
     end
 
     % RA maneuver
@@ -31,7 +39,7 @@ for i = 1:length(t)
             if abs(position_A(3) - 10000) < 5 && abs(position_B(3) - 10000) < 5
                 RA_region = false;
                 TA_region = false;
-                disp(['[RESOLVED] Conflict resolved at t = ' num2str(t(i)) ' sec']);
+                advisoryMessage = ['[RESOLVED] Conflict resolved at t = ' num2str(t(i)) ' sec'];
             end
         else
             position_A(3) = position_A(3) + climbRate_RA * dt;
@@ -43,11 +51,19 @@ for i = 1:length(t)
     trajectory1(end+1, :) = position_A;
     trajectory2(end+1, :) = position_B;
 
-    % Update plots
+    % Update plot markers
     set(h1, 'XData', position_A(1), 'YData', position_A(2), 'ZData', position_A(3));
     set(h2, 'XData', position_B(1), 'YData', position_B(2), 'ZData', position_B(3));
     set(trail1, 'XData', trajectory1(:,1), 'YData', trajectory1(:,2), 'ZData', trajectory1(:,3));
     set(trail2, 'XData', trajectory2(:,1), 'YData', trajectory2(:,2), 'ZData', trajectory2(:,3));
+
+    % Update advisory label
+    infoText = sprintf([ ...
+        'Aircraft A Speed: %d ft/s\n' ...
+        'Aircraft B Speed: %d ft/s\n' ...
+        '%s'], ...
+        velocity_A, velocity_B, advisoryMessage);
+    set(infoBoxHandle, 'String', infoText);
 
     drawnow;
     pause(0.1);

@@ -14,5 +14,7 @@ position_B = [ 3000, 0, 10000];
 % Advisory threshold
 TA_threshold = 890;   % TA range
 RA_threshold = 650;   % RA range
-climbRate_RA = 50;     % Climb or descend rate during RA
+climbRate_RA = 70;     % Climb or descend rate during RA
 returnRate = 40;       % Recovery rate to previous altitude
+
+advisoryMessage = 'No advisory yet';
