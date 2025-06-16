@@ -2,14 +2,6 @@
 trajectory1 = [];
 trajectory2 = [];
 
-% Create on-screen text box once (top-left corner)
-infoBoxHandle = annotation('textbox', [0.02, 0.75, 0.3, 0.2], ...
-    'String', '', ...
-    'FontSize', 11, ...
-    'BackgroundColor', 'white', ...
-    'EdgeColor', 'black', ...
-    'FitBoxToText', 'on');
-
 % Main loop
 for i = 1:length(t)
     % Update positions
@@ -22,7 +14,8 @@ for i = 1:length(t)
       % Compute relative velocity
     rel_vel = velocity_B + velocity_A;
      % Compute CPA
-    tcpa = dot(horizDist, rel_vel) / norm(rel_vel)^2;     
+    tcpa = dot(horizDist, rel_vel) / norm(rel_vel)^2;
+    %tcpa = horizDist / rel_vel;
    
     fprintf("Distance Between Aircraft A and Aircraft B : %.0f m\n", horizDist);
 
@@ -79,6 +72,25 @@ for i = 1:length(t)
         end
     end
 
+     % Track climb/descent
+    verticalChange_A = position_A(3) - initialAltitude_A;   % Climb
+    verticalChange_B = initialAltitude_B - position_B(3);   % Descent
+
+     % Update label
+    labelText = sprintf([ ...
+        'Aircraft A (Blue) Speed: %d m/s\n' ...
+        'Aircraft B (Red) Speed: %d m/s\n' ...
+        'Horizontal Distance between Aircraft A and B: %.0f m\n' ...
+        'Vertical Distance between Aircraft A and B: %.0f m\n' ...
+        'Aircraft A Climb: %.1f m\n' ...
+        'Aircraft B Descend: %.1f m\n' ...
+        '%s'], ...
+        velocity_A, velocity_B, horizDist, ...
+        (verticalChange_A+verticalChange_B), verticalChange_A, verticalChange_B, advisoryMessage);
+
+    set(labelHandle, 'String', labelText);
+
+
     % Store trajectory
     trajectory1(end+1, :) = position_A;
     trajectory2(end+1, :) = position_B;
@@ -88,15 +100,7 @@ for i = 1:length(t)
     set(h2, 'XData', position_B(1), 'YData', position_B(2), 'ZData', position_B(3));
     set(trail1, 'XData', trajectory1(:,1), 'YData', trajectory1(:,2), 'ZData', trajectory1(:,3));
     set(trail2, 'XData', trajectory2(:,1), 'YData', trajectory2(:,2), 'ZData', trajectory2(:,3));
-
-    % Update advisory label
-    infoText = sprintf([ ...
-        'Aircraft A Speed: %d m/s\n' ...
-        'Aircraft B Speed: %d m/s\n' ...
-        'Distance Between Aircraft A and Aircraft B is : %.2f m\n' ...
-        '%s'], ...
-        velocity_A, velocity_B, horizDist, advisoryMessage);
-    set(infoBoxHandle, 'String', infoText);
+   
 
     drawnow;
     pause(0.1);
