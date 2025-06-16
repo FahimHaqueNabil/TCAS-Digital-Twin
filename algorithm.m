@@ -100,6 +100,7 @@ for i = 1:length(t)
 
     drawnow;
     pause(0.1);
+
 end
 
 % Helper function: move to target altitude
