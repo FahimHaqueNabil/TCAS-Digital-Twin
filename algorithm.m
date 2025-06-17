@@ -13,9 +13,8 @@ for i = 1:length(t)
 
       % Compute relative velocity
     rel_vel = velocity_B + velocity_A;
-     % Compute CPA
-    tcpa = dot(horizDist, rel_vel) / norm(rel_vel)^2;
-    %tcpa = horizDist / rel_vel;
+     % Compute CPA   
+    tcpa = horizDist / rel_vel;
    
     fprintf("Distance Between Aircraft A and Aircraft B : %.0f m\n", horizDist);
 
@@ -24,7 +23,7 @@ for i = 1:length(t)
         TA_region = true;
         advisoryMessage = ['Advisory: [TA] Traffic Advisory at t = ' num2str(t(i)) ' sec'];
         TA_sent = true;
-        % fprintf("Aircraft A position %.1f and Aircraft B position: %.1f\n", position_A(1), position_B(1));
+         fprintf("Aircraft A position (%.0f,%.0f) and Aircraft B position: (%.0f,%.0f)\n", position_A(1), position_A(2),position_B(1),position_B(2));
          fprintf("TA: Distance Between Aircraft A and Aircraft B is : %.1f m\n", horizDist); 
     end
 
@@ -33,7 +32,7 @@ for i = 1:length(t)
         RA_region = true;
         advisoryMessage = ['Advisory: [RA] Resolution Advisory at t = ' num2str(t(i)) ' sec'];
         RA_sent = true;
-         %fprintf("Aircraft A position %.1f and Aircraft B position: %.1f\n", position_A(1), position_B(1));
+          fprintf("Aircraft A position (%.0f,%.0f) and Aircraft B position: (%.0f,%.0f)\n", position_A(1), position_A(2),position_B(1),position_B(2));
          fprintf("RA: Distance Between Aircraft A and Aircraft B is: %.1f m\n", horizDist);
     end
 
@@ -41,7 +40,7 @@ for i = 1:length(t)
     if horizDist < TA_threshold && TA_region && ~TA_sent && ~RA_region && tcpa > 0 && tcpa < tCPA_TA       
         advisoryMessage = ['Advisory: [TA] Traffic Advisory again at t = ' num2str(t(i)) ' sec'];
         TA_sent = true;
-         fprintf("TA: Distance Between Aircraft A and Aircraft B is : %.1f m\n", horizDist); 
+        fprintf("TA: Distance Between Aircraft A and Aircraft B is : %.1f m\n", horizDist); 
     end
 
     % RA Advisory sent again if not sent    
@@ -67,7 +66,7 @@ for i = 1:length(t)
         else
             position_A(3) = position_A(3) + climbRate_RA * dt;
             position_B(3) = position_B(3) - climbRate_RA * dt;
-            fprintf("RA: Aircraft A : Climb and Aircraft B : Descend");
+            fprintf("RA: Aircraft A : Climb and Aircraft B : Descend\n");
             advisoryMessage = ['Advisory: [RA] Aircraft A : Climb and Aircraft B : Descend'];
         end
     end
@@ -80,12 +79,12 @@ for i = 1:length(t)
     labelText = sprintf([ ...
         'Aircraft A (Blue) Speed: %d m/s\n' ...
         'Aircraft B (Red) Speed: %d m/s\n' ...
-        'Horizontal Distance between Aircraft A and B: %.0f m\n' ...
-        'Vertical Distance between Aircraft A and B: %.0f m\n' ...
-        'Aircraft A Climb: %.1f m\n' ...
-        'Aircraft B Descend: %.1f m\n' ...
+        'Aircraft A position (%.0f,%.0f)\n' ...
+        'Aircraft B position (%.0f,%.0f)\n' ...
+        'Horizontal Distance: %.0f m and Vertical Distance: %.0f m\n' ...
+        'Aircraft A Climb: %.1f m and Aircraft B Descend: %.1f m\n' ...
         '%s'], ...
-        velocity_A, velocity_B, horizDist, ...
+        velocity_A, velocity_B, position_A(1), position_A(2),position_B(1),position_B(2), horizDist, ...
         (verticalChange_A+verticalChange_B), verticalChange_A, verticalChange_B, advisoryMessage);
 
     set(labelHandle, 'String', labelText);

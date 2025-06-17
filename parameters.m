@@ -1,15 +1,15 @@
 % Simulation parameters
-totalTime = 60;
+totalTime = 30;
 dt = 0.1;
 t = 0:dt:totalTime;
 
 % Speed of airplanes (m/s)
-velocity_A = 150;
-velocity_B = 125;
+velocity_A = 250;
+velocity_B = 225;
 
 % Initial position (x, y, z)
-position_A = [-3000, 0, 10000];
-position_B = [ 3000, 0, 10000];
+position_A = [-1000, 0, 10000];
+position_B = [ 2000, 0, 10000];
 
 advisoryMessage = 'Advisory: None';
 
