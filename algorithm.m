@@ -4,6 +4,8 @@ trajectory2 = [];
 
 % Main loop
 for i = 1:length(t)
+    try
+    
     % Update positions
     position_A(1) = position_A(1) + velocity_A * dt;
     position_B(1) = position_B(1) - velocity_B * dt;
@@ -62,6 +64,7 @@ for i = 1:length(t)
                 TA_sent = false;
                 RA_sent = false;
                 advisoryMessage = ['Advisory: [RESOLVED] Conflict resolved at t = ' num2str(t(i)) ' sec'];
+
             end
         else
             position_A(3) = position_A(3) + climbRate_RA * dt;
@@ -104,6 +107,11 @@ for i = 1:length(t)
     drawnow;
     pause(0.1);
 
+            
+    catch            
+          continue;
+    end
+  
 end
 
 % Helper function: move to target altitude

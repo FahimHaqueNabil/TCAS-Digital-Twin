@@ -1,6 +1,6 @@
 % Simulation parameters
 totalTime = 30;
-dt = 0.1;
+dt = 0.05;
 t = 0:dt:totalTime;
 
 % Speed of airplanes (m/s)
