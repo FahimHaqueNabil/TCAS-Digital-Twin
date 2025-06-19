@@ -21,7 +21,7 @@ tCPA_RA = 35;         % RA range
 initialAltitude_A = position_A(3);
 initialAltitude_B = position_B(3);
 
-% Advisory threshold distances (in meters)
+% Advisory threshold horizontal distances (in meters)
 TA_threshold = 890;
 RA_threshold = 650;
 
