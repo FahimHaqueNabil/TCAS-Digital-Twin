@@ -102,7 +102,7 @@ for i = 1:length(t)
     set(h2, 'XData', position_B(1), 'YData', position_B(2), 'ZData', position_B(3));
     set(trail1, 'XData', trajectory1(:,1), 'YData', trajectory1(:,2), 'ZData', trajectory1(:,3));
     set(trail2, 'XData', trajectory2(:,1), 'YData', trajectory2(:,2), 'ZData', trajectory2(:,3));
-   
+    
 
     drawnow;
     pause(0.1);

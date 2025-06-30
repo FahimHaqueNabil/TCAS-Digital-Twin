@@ -26,5 +26,5 @@ TA_threshold = 890;
 RA_threshold = 650;
 
 % Vertical maneuvering
-climbRate_RA = 60;     % Climb or descend rate during RA m/s
+climbRate_RA = 80;     % Climb or descend rate during RA m/s
 returnRate = 60;       % Recovery rate to previous altitude m/s
